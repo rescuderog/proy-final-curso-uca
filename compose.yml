@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+
+  php:
+    container_name: php-apache
+    build:
+      context: .
+      dockerfile: ./php-docker-serv/Dockerfile
+    links:
+      - db
+    volumes:
+      - ./php/public:/var/www/html
+      - ./php/private:/var/www/private
+    ports:
+      - 8000:80
+
+  db:
+    container_name: mariadb
+    image: mariadb
+    ports:
+      - 6033:3306
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    ports:
+      - 8081:80
